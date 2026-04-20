@@ -1,0 +1,3 @@
+com\system\payments\controller\HealthCheck.class
+com\system\payments\config\PostgresConfig.class
+com\system\payments\PaymentsApplication.class
