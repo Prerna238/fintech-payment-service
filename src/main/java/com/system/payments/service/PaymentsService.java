@@ -3,6 +3,7 @@ package com.system.payments.service;
 import com.system.payments.entity.Payment;
 import com.system.payments.model.PaymentsRequest;
 import com.system.payments.repository.PaymentRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,13 +19,17 @@ public class PaymentsService {
     @Autowired
     private PaymentRepository paymentRepository;
 
-    public Payment recordPayment(PaymentsRequest paymentRequest){
+    @Autowired
+    private LedgerService ledgerService;
+
+    @Transactional
+    public String recordPayment(PaymentsRequest paymentRequest){
 
         try {
             Payment prevPayment = checkForDuplicatePayment(paymentRequest);
             if (prevPayment != null) {
-                log.info("Payment was already initiated for {}", paymentRequest.getSourceAccount());
-                return prevPayment;
+                log.info("Duplicate Payment {}", paymentRequest.getSourceAccount());
+                return "Duplicate Payment";
             }
 
             Payment payment = new Payment();
@@ -38,7 +43,9 @@ public class PaymentsService {
             payment.setStatus("CREATED");
             payment.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
 
-            return paymentRepository.save(payment);
+            paymentRepository.save(payment);
+            ledgerService.addLedgerRecord(payment);
+            return "Payment Successful";
         }catch(Exception e){
             log.error("Error while initiating payment for {}", paymentRequest.getSourceAccount());
         }
