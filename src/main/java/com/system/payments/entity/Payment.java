@@ -24,6 +24,7 @@ public class Payment {
     private String sourceAccount;
     private String destAccount;
     private String status;
+    private Boolean ledgerCreated;
 
     @Column(unique=true)
     private String idempotencyKey;

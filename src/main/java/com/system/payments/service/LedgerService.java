@@ -21,6 +21,8 @@ public class LedgerService {
 
     public String addLedgerRecord(Payment payment){
         try {
+            if(Math.random()<0.3)
+                throw new RuntimeException();
             LedgerEntity credit = new LedgerEntity();
 
             credit.setAccount(payment.getDestAccount());
@@ -42,6 +44,7 @@ public class LedgerService {
             return "Success";
         }catch(Exception e){
             log.error("Error while trying to add entries in Ledger Service - {}",e.getMessage());
+            payment.setLedgerCreated(false);
             return "Failure";
         }
     }

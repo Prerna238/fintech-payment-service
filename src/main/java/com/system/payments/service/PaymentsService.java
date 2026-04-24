@@ -42,6 +42,7 @@ public class PaymentsService {
 
             payment.setStatus("CREATED");
             payment.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
+            payment.setLedgerCreated(true);
 
             paymentRepository.save(payment);
             ledgerService.addLedgerRecord(payment);
