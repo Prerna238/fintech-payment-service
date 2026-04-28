@@ -13,6 +13,6 @@ import java.util.Optional;
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     public Optional<Payment> findByIdempotencyKey(String key);
 
-    @Query(value = "SELECT * from payment where status = :status and ledgerCreated = :ledgerCreated", nativeQuery = true)
+    @Query(value = "SELECT p from Payment p where p.status=:status and p.ledgerCreated=:ledgerCreated")
     public List<Payment> findByStatusAndLedgerCreated(@Param("status")String status, @Param("ledgerCreated") Boolean ledgerCreated);
 }

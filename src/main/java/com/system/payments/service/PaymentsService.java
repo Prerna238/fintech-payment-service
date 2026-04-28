@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -42,10 +43,13 @@ public class PaymentsService {
 
             payment.setStatus("CREATED");
             payment.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
-            payment.setLedgerCreated(true);
+            payment.setLedgerCreated(false);
 
             paymentRepository.save(payment);
             ledgerService.addLedgerRecord(payment);
+
+            payment.setLedgerCreated(true);
+            paymentRepository.save(payment);
             return "Payment Successful";
         }catch(Exception e){
             log.error("Error while initiating payment for {}", paymentRequest.getSourceAccount());
@@ -65,4 +69,8 @@ public class PaymentsService {
         return paymentRepository.findById(id).orElse(null);
     }
 
+    public List<Payment> mismatches(){
+        List<Payment> mismatched = paymentRepository.findByStatusAndLedgerCreated("CREATED",false);
+        return mismatched;
+    }
 }
