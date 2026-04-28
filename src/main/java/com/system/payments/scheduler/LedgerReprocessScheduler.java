@@ -8,11 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @Slf4j
 @EnableScheduling
+@RestController
 public class LedgerReprocessScheduler {
 
     @Autowired
@@ -29,10 +31,14 @@ public class LedgerReprocessScheduler {
 
         log.info("Started Scheduler for failed Ledgers");
         try {
-            List<Payment> successfulPayments = paymentRepository.findByStatusAndLedgerCreated("CREATED", true);
+            List<Payment> successfulPayments = paymentRepository.findByStatusAndLedgerCreated("CREATED",false);
             log.info("Found {} cases of failed Ledger",successfulPayments.size());
             for (Payment payment : successfulPayments) {
-                ledgerService.addLedgerRecord(payment);
+                String res = ledgerService.addLedgerRecord(payment);
+                if(res.equals("Success")){
+                    payment.setLedgerCreated(true);
+                    paymentRepository.save(payment);
+                }
             }
         }catch (Exception e){
             log.error("Error while trying to reprocess failed Ledger {}",e.getMessage());
