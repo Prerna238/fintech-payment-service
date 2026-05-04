@@ -3,6 +3,7 @@ package com.system.payments.service;
 import com.system.payments.entity.LedgerEntity;
 import com.system.payments.entity.Payment;
 import com.system.payments.repository.LedgerEntryRepository;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,8 @@ public class LedgerService {
     @Autowired
     private LedgerEntryRepository ledgerEntryRepository;
 
-    public String addLedgerRecord(Payment payment){
+    @Transactional
+    public String addLedgerRecord(Payment payment) throws Exception{
         try {
             if(Math.random()<0.3)
                 throw new RuntimeException();
@@ -45,7 +47,7 @@ public class LedgerService {
         }catch(Exception e){
             log.error("Error while trying to add entries in Ledger Service - {}",e.getMessage());
             payment.setLedgerCreated(false);
-            return "Failure";
+            throw e;
         }
     }
 }
