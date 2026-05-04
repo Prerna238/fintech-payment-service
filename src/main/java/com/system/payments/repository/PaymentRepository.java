@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,4 +16,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     @Query(value = "SELECT p from Payment p where p.status=:status and p.ledgerCreated=:ledgerCreated")
     public List<Payment> findByStatusAndLedgerCreated(@Param("status")String status, @Param("ledgerCreated") Boolean ledgerCreated);
+
+    @Query(value = "SELECT p from Payment p where p.status=:status and p.ledgerCreated=:ledgerCreated and p.nextRetryAt<=:nextRetryAt")
+    public List<Payment> findByStatusAndLedgerCreatedAndNextRetryAtBefore(@Param("status")String status, @Param("ledgerCreated") Boolean ledgerCreated, @Param("nextRetryAt") LocalDateTime nextRetryAt);
 }
