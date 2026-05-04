@@ -8,29 +8,22 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
-public class Payment {
+public class LedgerEntity {
 
     @Id
     @GeneratedValue
     private Long id;
 
+    private Long paymentId;
+    private String account;
     private BigDecimal amount;
-    private String currency;
-    private String sourceAccount;
-    private String destAccount;
-    private String status;
-    private Boolean ledgerCreated;
-    private Integer retryCount=0;
-    private LocalDateTime nextRetryAt;
-
-    @Column(unique=true)
-    private String idempotencyKey;
-
-    private Timestamp createdAt;
+    private String type;
+    private LocalDateTime createdAt;
 }
+
+
