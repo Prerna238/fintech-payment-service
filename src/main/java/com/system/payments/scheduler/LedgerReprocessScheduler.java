@@ -35,7 +35,7 @@ public class LedgerReprocessScheduler {
 
         log.info("Started Scheduler for failed Ledgers");
         try {
-            List<Payment> successfulPayments = paymentRepository.findByStatusRetryPendingAndNextRetryAtBefore(PaymentStatus.RETRY_PENDING.toString(), LocalDateTime.now());
+            List<Payment> successfulPayments = paymentRepository.findByStatusRetryPendingAndNextRetryAtBefore(PaymentStatus.RETRY_PENDING, LocalDateTime.now());
             log.info("Found {} cases of failed Ledger",successfulPayments.size());
             for (Payment payment : successfulPayments) {
                 if(payment.getRetryCount()>=MAX_RETRIES)
@@ -53,6 +53,7 @@ public class LedgerReprocessScheduler {
                 }
                 paymentRepository.save(payment);
             }
+            log.info("Completed Scheduler for failed Ledgers");
         }catch (Exception e){
             log.error("Error while trying to reprocess failed Ledger {}",e.getMessage());
         }

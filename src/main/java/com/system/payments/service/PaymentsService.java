@@ -90,7 +90,7 @@ public class PaymentsService {
     }
 
     public List<Payment> mismatches(){
-        List<Payment> mismatched = paymentRepository.findByStatusAndLedgerCreated("CREATED",false);
+        List<Payment> mismatched = paymentRepository.findByStatusAndLedgerCreated(PaymentStatus.SUCCESS,false);
         return mismatched;
     }
 }
