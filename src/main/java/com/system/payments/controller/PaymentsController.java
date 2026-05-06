@@ -3,6 +3,7 @@ package com.system.payments.controller;
 import com.system.payments.entity.Payment;
 import com.system.payments.model.PaymentsRequest;
 import com.system.payments.service.PaymentsService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ public class PaymentsController {
     private PaymentsService paymentsService;
 
     @RequestMapping(value= "/newPayment", method=RequestMethod.POST)
-    public ResponseEntity<String> createANewPayment(@RequestBody PaymentsRequest payment){
+    public ResponseEntity<String> createANewPayment(@Valid @RequestBody PaymentsRequest payment){
         String res="";
         try{
             log.info("Payment initiated for {}", payment.getSourceAccount());
