@@ -4,6 +4,7 @@ import com.system.payments.entity.Payment;
 import com.system.payments.repository.LedgerEntryRepository;
 import com.system.payments.repository.PaymentRepository;
 import com.system.payments.service.LedgerService;
+import com.system.payments.util.PaymentStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -34,11 +35,11 @@ public class LedgerReprocessScheduler {
 
         log.info("Started Scheduler for failed Ledgers");
         try {
-            List<Payment> successfulPayments = paymentRepository.findByStatusAndLedgerCreatedAndNextRetryAtBefore("CREATED",false, LocalDateTime.now());
+            List<Payment> successfulPayments = paymentRepository.findByStatusRetryPendingAndNextRetryAtBefore(PaymentStatus.RETRY_PENDING.toString(), LocalDateTime.now());
             log.info("Found {} cases of failed Ledger",successfulPayments.size());
             for (Payment payment : successfulPayments) {
                 if(payment.getRetryCount()>=MAX_RETRIES)
-                    payment.setStatus("FAILED");
+                    payment.setStatus(PaymentStatus.FAILED);
                 else {
                     String res = ledgerService.addLedgerRecord(payment);
                     if (res.equals("Success")) {

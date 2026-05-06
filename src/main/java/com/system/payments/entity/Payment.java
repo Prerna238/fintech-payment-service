@@ -1,9 +1,7 @@
 package com.system.payments.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.system.payments.util.PaymentStatus;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,7 +22,8 @@ public class Payment {
     private String currency;
     private String sourceAccount;
     private String destAccount;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus status;
     private Boolean ledgerCreated;
     private Integer retryCount=0;
     private LocalDateTime nextRetryAt;

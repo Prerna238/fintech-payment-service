@@ -3,6 +3,7 @@ package com.system.payments.service;
 import com.system.payments.entity.Payment;
 import com.system.payments.model.PaymentsRequest;
 import com.system.payments.repository.PaymentRepository;
+import com.system.payments.util.PaymentStatus;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class PaymentsService {
         payment.setIdempotencyKey(paymentRequest.getIdempotencyKey());
         payment.setSourceAccount(paymentRequest.getSourceAccount());
 
-        payment.setStatus("CREATED");
+        payment.setStatus(PaymentStatus.INITIATED);
         payment.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
         payment.setLedgerCreated(false);
 
@@ -59,16 +60,19 @@ public class PaymentsService {
 
         try{
             //Ledger creation is eventually consistent and retried separately
+            payment.setStatus(PaymentStatus.PROCESSING);
             ledgerService.addLedgerRecord(payment);
         }catch(Exception e){
             log.error("Error while trying to add ledger entry for {}",e.getMessage());
             payment.setRetryCount(payment.getRetryCount()+1);
             payment.setNextRetryAt(LocalDateTime.now().plusMinutes(1));
+            payment.setStatus(PaymentStatus.RETRY_PENDING);
             paymentRepository.save(payment);
             return "Ledger failed";
         }
 
         payment.setLedgerCreated(true);
+        payment.setStatus(PaymentStatus.SUCCESS);
         paymentRepository.save(payment);
         return "Payment Successful";
     }
