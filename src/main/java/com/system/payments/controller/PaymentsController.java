@@ -3,6 +3,9 @@ package com.system.payments.controller;
 import com.system.payments.entity.Payment;
 import com.system.payments.model.PaymentsRequest;
 import com.system.payments.service.PaymentsService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,13 @@ public class PaymentsController {
     @Autowired
     private PaymentsService paymentsService;
 
+    @Operation( summary="Create Payment",
+            description="Creates a new payment and ensures idempotent processing.")
+    @ApiResponses({
+            @ApiResponse(responseCode="200", description="Payment Created Successfully"),
+            @ApiResponse(responseCode="400", description="Invalid Request"),
+            @ApiResponse(responseCode="409", description="Duplicate idempotency key")
+    })
     @RequestMapping(value= "/newPayment", method=RequestMethod.POST)
     public ResponseEntity<String> createANewPayment(@Valid @RequestBody PaymentsRequest payment){
         String res="";
@@ -38,6 +48,13 @@ public class PaymentsController {
         }
     }
 
+    @Operation( summary="Get Payment details",
+                description="Get the payment details of a particular payment Id")
+    @ApiResponses({
+            @ApiResponse(responseCode="200", description="Payment Created Successfully"),
+            @ApiResponse(responseCode="400", description="Invalid Request"),
+            @ApiResponse(responseCode="409", description="Duplicate idempotency key")
+    })
     @RequestMapping(value= "/payment/{id}", method=RequestMethod.GET)
     public ResponseEntity<Payment> getPayment(@PathVariable Long id){
         try{
@@ -49,6 +66,13 @@ public class PaymentsController {
         }
     }
 
+    @Operation( summary="Reconciliation mismatches",
+                description="Returns payments whose ledger entries are missing or incomplete")
+    @ApiResponses({
+            @ApiResponse(responseCode="200", description="Payment Created Successfully"),
+            @ApiResponse(responseCode="400", description="Invalid Request"),
+            @ApiResponse(responseCode="409", description="Duplicate idempotency key")
+    })
     @RequestMapping(value= "/reconcilliation/mismatch", method=RequestMethod.GET)
     public ResponseEntity<List<Payment>> paymentMismatch(){
         try{
