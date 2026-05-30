@@ -27,7 +27,7 @@ public class PaymentsController {
             log.info("Payment initiated for {}", payment.getSourceAccount());
             res = paymentsService.recordPayment(payment);
             if(res.equals("Duplicate Payment")){
-                log.info("Payment was already initiated for {}",payment.getSourceAccount());
+                log.warn("Payment was already initiated for idempotencyKey:{}",payment.getIdempotencyKey());
                 return new ResponseEntity<>(res,HttpStatusCode.valueOf(409));
             }
                 log.info("Payment initiated successfully");
@@ -52,10 +52,10 @@ public class PaymentsController {
     @RequestMapping(value= "/reconcilliation/mismatch", method=RequestMethod.GET)
     public ResponseEntity<List<Payment>> paymentMismatch(){
         try{
-            log.info("Trying to get all the reconcilliation mismatches");
+            log.info("Trying to get all the reconciliation mismatches");
             return ResponseEntity.ok(paymentsService.mismatches());
         }catch(Exception e){
-            log.error("Error while trying to get the reconcilliation mismatches");
+            log.error("Error while trying to get the reconciliation mismatches");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

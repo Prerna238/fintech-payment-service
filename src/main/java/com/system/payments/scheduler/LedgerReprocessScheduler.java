@@ -41,14 +41,17 @@ public class LedgerReprocessScheduler {
                 if(payment.getRetryCount()>=MAX_RETRIES)
                     payment.setStatus(PaymentStatus.FAILED);
                 else {
+                    log.info("Retrying ledger creation. paymentId={}, retryCount={}",payment.getId(),payment.getRetryCount());
                     String res = ledgerService.addLedgerRecord(payment);
                     if (res.equals("Success")) {
                         payment.setLedgerCreated(true);
                         paymentRepository.save(payment);
+                        log.info("Successfully added ledger record to paymentId={}",payment.getId());
                     }
                     else{
                         payment.setRetryCount(payment.getRetryCount()+1);
                         payment.setNextRetryAt(LocalDateTime.now().plusMinutes(1));
+                        log.info("Failed to add ledger record to paymentId={}, retryCount={}",payment.getId(),payment.getRetryCount());
                     }
                 }
                 paymentRepository.save(payment);

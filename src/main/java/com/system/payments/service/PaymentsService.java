@@ -26,6 +26,8 @@ public class PaymentsService {
 
     @Transactional
     public Payment addANewPayment(PaymentsRequest paymentRequest) throws Exception{
+
+        log.info("Processing payment request . idempotencyKey={}",paymentRequest.getIdempotencyKey());
         Payment payment = new Payment();
 
         payment.setAmount(paymentRequest.getAmount());
@@ -40,6 +42,7 @@ public class PaymentsService {
 
         paymentRepository.save(payment);
 
+        log.info("Payment persisted. paymentId={}",payment.getId());
         return payment;
     }
 
