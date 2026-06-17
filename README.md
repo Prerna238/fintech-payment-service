@@ -130,7 +130,7 @@ CREATE DATABASE fintech_payment_service;
 
 * spring.datasource.url=jdbc:postgresql://localhost:5432/payments
 * spring.datasource.username=postgres
-* spring.datasource.password=prerna
+* spring.datasource.password=my_pwd
 
 Commands:
 
