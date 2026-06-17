@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -31,7 +31,7 @@ class PaymentServiceTest {
     private LedgerService ledgerService;
 
     @Test
-    void shouldCreatePaymentSuccessfully() {
+    void shouldCreatePaymentSuccessfully() throws Exception {
 
         PaymentsRequest request = new PaymentsRequest();
         request.setAmount(BigDecimal.valueOf(100));
@@ -58,7 +58,7 @@ class PaymentServiceTest {
     }
 
     @Test
-    void shouldRejectDuplicatePayment() {
+    void shouldRejectDuplicatePayment() throws Exception {
 
         PaymentsRequest request = new PaymentsRequest();
         request.setIdempotencyKey("DUPLICATE");
